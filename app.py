@@ -109,17 +109,21 @@ if uploaded_file is not None:
         col1, col2 = st.columns([3, 1], vertical_alignment="center")
         # col1, col2 = st.columns([3, 1])
 
+        txt_acuracia = "Acurácia (comparação com o relatório do juiz):"
+        txt_verdade = "Verdade (requisitos do CPC):"
+        txt_fluencia = "Fluência (estilo, ortografia, gramática):"
+
         with col1:
             with st.container(height=300):
                 st.markdown(df["gpt-4o-v1"][st.session_state.linha])
                 # st.markdown('<span style="font-size: 12px;">'+df["gpt-4o-v1"][st.session_state.linha]+'</span>', unsafe_allow_html=True)
 
         with col2:
-            st.write("Acurácia:")
+            st.write(txt_acuracia)
             gpt4ov1_ac = st.feedback("faces", key="gpt4ov1_ac"+str(st.session_state.linha))
-            st.write("Verdade (requisitos do CPC):")
+            st.write(txt_verdade)
             gpt4ov1_ve = st.feedback("faces", key="gpt4ov1_ve"+str(st.session_state.linha))
-            st.write("Fluência:")
+            st.write(txt_fluencia)
             gpt4ov1_fl = st.feedback("faces", key="gpt4ov1_fl"+str(st.session_state.linha))
 
         st.divider()
@@ -129,16 +133,15 @@ if uploaded_file is not None:
         with col1:
             with st.container(height=300):
                 st.markdown(df["gpt-4o-mini-v1"][st.session_state.linha])
-                # st.html('<span style="font-size: 12px;">'+df["gpt-4o-mini-v1"][st.session_state.linha]+'</span>')
 
         with col2:
             # gpt4ominiv1_ac = st.radio("Acurácia?", ("Sim", "Não"), key="gpt4ominiv1_ac")
-            st.write("Acurácia:")
-            gpt4ominiv1_ac = st.feedback("stars", key="gpt4ominiv1_ac"+str(st.session_state.linha))
-            st.write("Verdade (requisitos do CPC):")
-            gpt4ominiv1_ve = st.feedback("stars", key="gpt4ominiv1_ve"+str(st.session_state.linha))
-            st.write("Fluência:")
-            gpt4ominiv1_fl = st.feedback("stars", key="gpt4ominiv1_fl"+str(st.session_state.linha))
+            st.write(txt_acuracia)
+            gpt4ominiv1_ac = st.feedback("faces", key="gpt4ominiv1_ac"+str(st.session_state.linha))
+            st.write(txt_verdade)
+            gpt4ominiv1_ve = st.feedback("faces", key="gpt4ominiv1_ve"+str(st.session_state.linha))
+            st.write(txt_fluencia)
+            gpt4ominiv1_fl = st.feedback("faces", key="gpt4ominiv1_fl"+str(st.session_state.linha))
 
         st.divider()
 
@@ -150,11 +153,11 @@ if uploaded_file is not None:
                 # st.html('<span style="font-size: 12px;">'+df["gpt-4o-v2"][st.session_state.linha]+'</span>')
 
         with col2:
-            st.write("Acurácia:")
+            st.write(txt_acuracia)
             gpt4ov2_ac = st.feedback("stars", key="gpt4ov2_ac"+str(st.session_state.linha))
-            st.write("Verdade (requisitos do CPC):")
+            st.write(txt_verdade)
             gpt4ov2_ve = st.feedback("stars", key="gpt4ov2_ve"+str(st.session_state.linha))
-            st.write("Fluência:")
+            st.write(txt_fluencia)
             gpt4ov2_fl = st.feedback("stars", key="gpt4ov2_fl"+str(st.session_state.linha))
 
         st.divider()
@@ -167,11 +170,11 @@ if uploaded_file is not None:
                 # st.html('<span style="font-size: 12px;">'+df["gpt-4o-mini-v2"][st.session_state.linha]+'</span>')
 
         with col2:
-            st.write("Acurácia:")
+            st.write(txt_acuracia)
             gpt4ominiv2_ac = st.feedback("stars", key="gpt4ominiv2_ac"+str(st.session_state.linha))
-            st.write("Verdade (requisitos do CPC):")
+            st.write(txt_verdade)
             gpt4ominiv2_ve = st.feedback("stars", key="gpt4ominiv2_ve"+str(st.session_state.linha))
-            st.write("Fluência:")
+            st.write(txt_fluencia)
             gpt4ominiv2_fl = st.feedback("stars", key="gpt4ominiv2_fl"+str(st.session_state.linha))
 
         st.button('Próximo processo', on_click=mostrar_proxima_linha, key='botao_mostrar_proxima_linha')
@@ -204,14 +207,20 @@ if uploaded_file is not None:
             # "llamav2_f": llamav2_f,
         }
 
+        arquivo_retorno = uploaded_file.name.split(".")[0]+"-retorno.xlsx"
+
         df_respostas = pd.DataFrame(respostas)
-        df_respostas.to_excel("Respostas.xlsx", index=False)
+        # df_respostas.to_excel("Respostas.xlsx", index=False)
+        df_respostas.to_excel(arquivo_retorno, index=False)
 
         # Ler o arquivo Excel gerado
-        with open("Respostas.xlsx", "rb") as file:
+        # with open("Respostas.xlsx", "rb") as file:
+        with open(arquivo_retorno, "rb") as file:
             st.download_button(
                 label="Salvar respostas",
+                type="primary",
                 data=file,
-                file_name=uploaded_file.name.split(".")[0]+"-respostas.xlsx",
+                # file_name=uploaded_file.name.split(".")[0]+"-retorno.xlsx",
+                file_name=arquivo_retorno,
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
