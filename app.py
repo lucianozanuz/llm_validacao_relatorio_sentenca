@@ -2,21 +2,23 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-st.set_page_config(page_title="Validação de relatórios de sentença gerados por LLM", page_icon=":robot_face:", layout="wide")
+st.set_page_config(page_title="Validação de relatórios de sentença gerados por LLM", page_icon=":classical_building:", layout="wide")
 
 # Título da aplicação
 st.title('Validação de relatórios de sentença gerados por LLM')
 
-with st.expander("Instruções"):
+with st.expander("Instruções para avaliação dos relatórios de sentença gerados por LLM"):
     st.write('''
-        Considere os seguintes critérios de avaliação baseados no MQM Framework.    
-        Acurácia: Problemas relacionados a quão bem o conteúdo do TEXTO_ALVO representa o conteúdo do TEXTO_REFERENCIA, considerando a terminologia (se o TEXTO_ALVO contém termos legais obrigatórios), a omissão e a inclusão de termos importantes ou obrigatórios.  
-        Verdade: Problemas relacionados a se o TEXTO_ALVO contém requisitos do Código do Processo Civil (o TEXTO_ALVO deverá conter os nomes das partes, a identificação do caso, com a suma do pedido e da contestação e o registro das principais ocorrências havidas no andamento do processo; o TEXTO_ALVO precisa conter o nomes das partes, o tipo de ação, os pedidos da inicial, os pedidos da contestação e sobre as principais ocorrências; por exemplo, no Procedimento Comum Civil deve conter as audiências e os laudos periciais).  
-        Fluência: Problemas ao estilo (o TEXTO_ALVO é formal, mas segue os princípios da linguagem simples), ortografia (o TEXTO_ALVO possui ortografia correta), gramática (o TEXTO_ALVO possui gramática correta), violações locais (o formato de datas, valores, números, telefones e endereços do TEXTO_ALVO segue o padrão local do Brasil).  
-        Retorne apenas o resumo da análise da seguinte forma, em formato JSON.  
-        Acurácia: 5 se contém problemas graves de Acurácia (Exemplo: TEXTO_ALVO não se refere ao mesmo processo judicial relatado no TEXTO_REFERENCIA); 3 se contém problemas leves de Acurácia (Exemplo: TEXTO_ALVO se refere ao mesmo processo judicial relatado no TEXTO_REFERENCIA, mas, omite termos legais obrigatórios ou inclui termos inadequados para um relatório de sentença); 0 se não contém problemas de Acurácia (Exemplo: TEXTO_ALVO se refere ao mesmo processo judicial relatado no TEXTO_REFERENCIA, não omite termos legais obrigatórios e não inclui termos inadequados para um relatório de sentença).  
-        Verdade: 5 se contém problemas graves de Verdade (Exemplo: TEXTO_ALVO não contém o nomes das partes, o tipo de ação e os pedidos da inicial e da contestação); 3 se contém problemas leves de Verdade (Exemplo: TEXTO_ALVO contém o nomes das partes, o tipo de ação e os pedidos da inicial, mas não descreve adequadamente as principais ocorrências como audiências e laudos periciais, se existirem no TEXTO_REFERENCIA); 0 se não contém problemas de Verdade (Exemplo: TEXTO_ALVO contém o nomes das partes, o tipo de ação e os pedidos da inicial, e descreve adequadamente as principais ocorrências como audiências e laudos periciais, se existirem no TEXTO_REFERENCIA).  
-        Fluência: 5 se contém problemas graves de Fluência (Exemplo: TEXTO_ALVO contém interrupções, como divisão em seções ou subtítulos); 3 se contém problemas leves de Fluência (Exemplo: TEXTO_ALVO não contém interrupções, como divisão em seções ou subtítulos, mas não segue os princípios da linguagem simples ou possui erros de ortografia ou gramática ou o formato de datas, valores, números, telefones e endereços não segue o padrão local do Brasil); 0 se não contém problemas de Fluência (Exemplo: TEXTO_ALVO não contém interrupções, como divisão em seções ou subtítulos, segue os princípios da linguagem simples e não possui erros de ortografia e gramática e o formato de datas, valores, números, telefones e endereços segue o padrão local do Brasil).      
+        A metodologia de avaliação deste trabalho foi baseada no **MQM Framework** (https://themqm.org/).
+        
+        Avalie com nota mais baixa se o texto contém problemas graves no critério, com nota mais alta se os problemas forem leves e com nota máxima se considerar que não há problemas no critério.
+
+        Critérios avaliados (considerar TEXTO_ALVO como o relatório de sentença gerado por LLM e TEXTO_REFERENCIA como o relatório de sentença escrito pelo juiz):
+        - **Acurácia**: Refere-se ao nível em que o conteúdo do TEXTO_ALVO representa o conteúdo do TEXTO_REFERENCIA, considerando a terminologia (se o TEXTO_ALVO contém termos legais obrigatórios), a omissão e a inclusão de termos importantes ou obrigatórios.
+          - Exemplo de problemas graves: TEXTO_ALVO não se refere ao mesmo processo judicial relatado no TEXTO_REFERENCIA;
+          - Exemplo de problemas leves: TEXTO_ALVO se refere ao mesmo processo judicial relatado no TEXTO_REFERENCIA, mas, omite termos legais obrigatórios ou inclui termos inadequados para um relatório de sentença;
+        - **Verdade**: Refere-se a se o TEXTO_ALVO contém os requisitos do Código do Processo Civil (nomes das partes, a identificação do caso, os pedidos da inicial e da contestação e registro das principais ocorrências do processo)
+        - **Fluência**: Refere-se ao estilo (TEXTO_ALVO deve ser formal, mas seguir os princípios da linguagem simples), ortografia, gramática, violações locais (o formato de datas, valores, números, telefones e endereços segue o padrão local do Brasil) e interrupções, como divisão em seções ou subtítulos.
     ''')
 
 def inicializar_variaveis():
@@ -42,15 +44,13 @@ def inicializar_variaveis():
     st.session_state.llamav2_f = []
 
 def mostrar_proxima_linha():
-    st.write(gpt4ominiv1_ac)
-    st.write(gpt4ominiv1_ve)
-    st.write(gpt4ominiv1_fl)
-
-    st.write("antes")
-    st.write(st.session_state.gpt4ominiv1_a)
-
-    st.write("gpt4ov1_a="+str(len(st.session_state.gpt4ov1_a)))
-    st.write("gpt4ominiv1_a="+str(len(st.session_state.gpt4ominiv1_a)))
+    # st.write(gpt4ominiv1_ac)
+    # st.write(gpt4ominiv1_ve)
+    # st.write(gpt4ominiv1_fl)
+    # st.write("antes")
+    # st.write(st.session_state.gpt4ominiv1_a)
+    # st.write("gpt4ov1_a="+str(len(st.session_state.gpt4ov1_a)))
+    # st.write("gpt4ominiv1_a="+str(len(st.session_state.gpt4ominiv1_a)))
 
     if gpt4ov1_ac is None or gpt4ov1_ve is None or gpt4ov1_fl is None or \
         gpt4ominiv1_ac is None or gpt4ominiv1_ve is None or gpt4ominiv1_fl is None or \
@@ -81,14 +81,14 @@ def mostrar_proxima_linha():
         st.session_state.linha += 1
         # st.write("linha = " + str(st.session_state.linha) + " " + str(datetime.now().strftime("%H:%M:%S:%f")))
 
-        st.write("depois")
-        st.write(st.session_state.gpt4ominiv1_a)
+        # st.write("depois")
+        # st.write(st.session_state.gpt4ominiv1_a)
 
 # Carregar o arquivo Excel
 uploaded_file = st.file_uploader("Escolha um arquivo Excel", type=["xlsx"], on_change=inicializar_variaveis)
 
 if uploaded_file is not None:
-    st.write("linha = " + str(st.session_state.linha) + " " + str(datetime.now().strftime("%H:%M:%S:%f")))
+    # st.write("linha = " + str(st.session_state.linha) + " " + str(datetime.now().strftime("%H:%M:%S:%f")))
 
     df = pd.read_excel(uploaded_file)
 
@@ -115,11 +115,11 @@ if uploaded_file is not None:
                 # st.markdown('<span style="font-size: 12px;">'+df["gpt-4o-v1"][st.session_state.linha]+'</span>', unsafe_allow_html=True)
 
         with col2:
-            st.write("Acurácia")
+            st.write("Acurácia:")
             gpt4ov1_ac = st.feedback("faces", key="gpt4ov1_ac"+str(st.session_state.linha))
-            st.write("Verdade")
+            st.write("Verdade (requisitos do CPC):")
             gpt4ov1_ve = st.feedback("faces", key="gpt4ov1_ve"+str(st.session_state.linha))
-            st.write("Fluência")
+            st.write("Fluência:")
             gpt4ov1_fl = st.feedback("faces", key="gpt4ov1_fl"+str(st.session_state.linha))
 
         st.divider()
@@ -133,11 +133,11 @@ if uploaded_file is not None:
 
         with col2:
             # gpt4ominiv1_ac = st.radio("Acurácia?", ("Sim", "Não"), key="gpt4ominiv1_ac")
-            st.write("Acurácia")
+            st.write("Acurácia:")
             gpt4ominiv1_ac = st.feedback("stars", key="gpt4ominiv1_ac"+str(st.session_state.linha))
-            st.write("Verdade")
+            st.write("Verdade (requisitos do CPC):")
             gpt4ominiv1_ve = st.feedback("stars", key="gpt4ominiv1_ve"+str(st.session_state.linha))
-            st.write("Fluência")
+            st.write("Fluência:")
             gpt4ominiv1_fl = st.feedback("stars", key="gpt4ominiv1_fl"+str(st.session_state.linha))
 
         st.divider()
@@ -150,11 +150,11 @@ if uploaded_file is not None:
                 # st.html('<span style="font-size: 12px;">'+df["gpt-4o-v2"][st.session_state.linha]+'</span>')
 
         with col2:
-            st.write("Acurácia")
+            st.write("Acurácia:")
             gpt4ov2_ac = st.feedback("stars", key="gpt4ov2_ac"+str(st.session_state.linha))
-            st.write("Verdade")
+            st.write("Verdade (requisitos do CPC):")
             gpt4ov2_ve = st.feedback("stars", key="gpt4ov2_ve"+str(st.session_state.linha))
-            st.write("Fluência")
+            st.write("Fluência:")
             gpt4ov2_fl = st.feedback("stars", key="gpt4ov2_fl"+str(st.session_state.linha))
 
         st.divider()
@@ -167,20 +167,20 @@ if uploaded_file is not None:
                 # st.html('<span style="font-size: 12px;">'+df["gpt-4o-mini-v2"][st.session_state.linha]+'</span>')
 
         with col2:
-            st.write("Acurácia")
+            st.write("Acurácia:")
             gpt4ominiv2_ac = st.feedback("stars", key="gpt4ominiv2_ac"+str(st.session_state.linha))
-            st.write("Verdade")
+            st.write("Verdade (requisitos do CPC):")
             gpt4ominiv2_ve = st.feedback("stars", key="gpt4ominiv2_ve"+str(st.session_state.linha))
-            st.write("Fluência")
+            st.write("Fluência:")
             gpt4ominiv2_fl = st.feedback("stars", key="gpt4ominiv2_fl"+str(st.session_state.linha))
 
         st.button('Próximo processo', on_click=mostrar_proxima_linha, key='botao_mostrar_proxima_linha')
 
     else:
-        st.write(len(st.session_state.num_processo))
-        st.write(len(st.session_state.gpt4ov1_a))
-        st.write(len(st.session_state.gpt4ov1_v))
-        st.write(len(st.session_state.gpt4ov1_f))
+        # st.write(len(st.session_state.num_processo))
+        # st.write(len(st.session_state.gpt4ov1_a))
+        # st.write(len(st.session_state.gpt4ov1_v))
+        # st.write(len(st.session_state.gpt4ov1_f))
 
         respostas = {
             "num_processo": st.session_state.num_processo,
