@@ -135,7 +135,6 @@ if uploaded_file is not None:
                 st.markdown(df["gpt-4o-mini-v1"][st.session_state.linha])
 
         with col2:
-            # gpt4ominiv1_ac = st.radio("Acurácia?", ("Sim", "Não"), key="gpt4ominiv1_ac")
             st.write(txt_acuracia)
             gpt4ominiv1_ac = st.feedback("faces", key="gpt4ominiv1_ac"+str(st.session_state.linha))
             st.write(txt_verdade)
