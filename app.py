@@ -21,6 +21,7 @@ with st.expander("Instruções para avaliação dos relatórios de sentença ger
         - **Fluência**: Refere-se ao estilo (TEXTO_ALVO deve ser formal, mas seguir os princípios da linguagem simples), ortografia, gramática, violações locais (o formato de datas, valores, números, telefones e endereços segue o padrão local do Brasil) e interrupções, como divisão em seções ou subtítulos.
     ''')
 
+
 def inicializar_variaveis():
     st.session_state.linha = 0
     st.session_state.num_processo = []
@@ -43,15 +44,8 @@ def inicializar_variaveis():
     st.session_state.llamav2_v = []
     st.session_state.llamav2_f = []
 
-def mostrar_proxima_linha():
-    # st.write(gpt4ominiv1_ac)
-    # st.write(gpt4ominiv1_ve)
-    # st.write(gpt4ominiv1_fl)
-    # st.write("antes")
-    # st.write(st.session_state.gpt4ominiv1_a)
-    # st.write("gpt4ov1_a="+str(len(st.session_state.gpt4ov1_a)))
-    # st.write("gpt4ominiv1_a="+str(len(st.session_state.gpt4ominiv1_a)))
 
+def mostrar_proxima_linha():
     if gpt4ov1_ac is None or gpt4ov1_ve is None or gpt4ov1_fl is None or \
         gpt4ominiv1_ac is None or gpt4ominiv1_ve is None or gpt4ominiv1_fl is None or \
         gpt4ov2_ac is None or gpt4ov2_ve is None or gpt4ov2_fl is None or \
@@ -59,75 +53,65 @@ def mostrar_proxima_linha():
         st.error("Informe todas as avaliações")
     else:
         st.session_state.num_processo.append(df["num_processo"][st.session_state.linha])
-        st.session_state.gpt4ov1_a.append(gpt4ov1_ac)
-        st.session_state.gpt4ov1_v.append(gpt4ov1_ve)
-        st.session_state.gpt4ov1_f.append(gpt4ov1_fl)
-        st.session_state.gpt4ominiv1_a.append(gpt4ominiv1_ac)
-        st.session_state.gpt4ominiv1_v.append(gpt4ominiv1_ve)
-        st.session_state.gpt4ominiv1_f.append(gpt4ominiv1_fl)
+        st.session_state.gpt4ov1_a.append(gpt4ov1_ac + 1)
+        st.session_state.gpt4ov1_v.append(gpt4ov1_ve + 1)
+        st.session_state.gpt4ov1_f.append(gpt4ov1_fl + 1)
+        st.session_state.gpt4ominiv1_a.append(gpt4ominiv1_ac + 1)
+        st.session_state.gpt4ominiv1_v.append(gpt4ominiv1_ve + 1)
+        st.session_state.gpt4ominiv1_f.append(gpt4ominiv1_fl + 1)
         # st.session_state.llamav1_a.append()
         # st.session_state.llamav1_v.append()
         # st.session_state.llamav1_f.append()
-        st.session_state.gpt4ov2_a.append(gpt4ov2_ac)
-        st.session_state.gpt4ov2_v.append(gpt4ov2_ve)
-        st.session_state.gpt4ov2_f.append(gpt4ov2_fl)
-        st.session_state.gpt4ominiv2_a.append(gpt4ominiv2_ac)
-        st.session_state.gpt4ominiv2_v.append(gpt4ominiv2_ve)
-        st.session_state.gpt4ominiv2_f.append(gpt4ominiv2_fl)
+        st.session_state.gpt4ov2_a.append(gpt4ov2_ac + 1)
+        st.session_state.gpt4ov2_v.append(gpt4ov2_ve + 1)
+        st.session_state.gpt4ov2_f.append(gpt4ov2_fl + 1)
+        st.session_state.gpt4ominiv2_a.append(gpt4ominiv2_ac + 1)
+        st.session_state.gpt4ominiv2_v.append(gpt4ominiv2_ve + 1)
+        st.session_state.gpt4ominiv2_f.append(gpt4ominiv2_fl + 1)
         # st.session_state.llamav2_a.append()
         # st.session_state.llamav2_v.append()
         # st.session_state.llamav2_f.append()
-
         st.session_state.linha += 1
-        # st.write("linha = " + str(st.session_state.linha) + " " + str(datetime.now().strftime("%H:%M:%S:%f")))
 
-        # st.write("depois")
-        # st.write(st.session_state.gpt4ominiv1_a)
 
 # Carregar o arquivo Excel
 uploaded_file = st.file_uploader("Escolha um arquivo Excel", type=["xlsx"], on_change=inicializar_variaveis)
 
 if uploaded_file is not None:
-    # st.write("linha = " + str(st.session_state.linha) + " " + str(datetime.now().strftime("%H:%M:%S:%f")))
-
     df = pd.read_excel(uploaded_file)
 
     if st.session_state.linha < len(df):
-        # linha = st.session_state.linha
-        # st.write("linha < len(df): linha = " + str(linha) + " " + str(datetime.now().strftime("%H:%M:%S:%f")))
-
-        # st.header("Processo: " + df["num_processo"][st.session_state.linha])
+        progress = (st.session_state.linha + 1) / len(df)
+        st.progress(progress, str((st.session_state.linha + 1)) + " de " + str(len(df)) + " processos")
 
         st.subheader("Relatório de sentença original")
-
         with st.container(height=300):
             st.markdown(df["reference"][st.session_state.linha])
-            # st.markdown('<span style="font-size: 12px;">' + df["reference"][st.session_state.linha] + '</span>', unsafe_allow_html=True)
-
-        st.subheader("Relatórios gerados por LLM")
-
-        col1, col2 = st.columns([3, 1], vertical_alignment="center")
-        # col1, col2 = st.columns([3, 1])
 
         txt_acuracia = "Acurácia (comparação com o relatório do juiz):"
         txt_verdade = "Verdade (requisitos do CPC):"
         txt_fluencia = "Fluência (estilo, ortografia, gramática):"
 
+        st.subheader("Relatórios gerados por LLM")
+
+        st.write("##### Relatório de sentença 1")
+        col1, col2 = st.columns([3, 1], vertical_alignment="center")
+
         with col1:
             with st.container(height=300):
                 st.markdown(df["gpt-4o-v1"][st.session_state.linha])
-                # st.markdown('<span style="font-size: 12px;">'+df["gpt-4o-v1"][st.session_state.linha]+'</span>', unsafe_allow_html=True)
 
         with col2:
             st.write(txt_acuracia)
-            gpt4ov1_ac = st.feedback("faces", key="gpt4ov1_ac"+str(st.session_state.linha))
+            gpt4ov1_ac = st.feedback("stars", key="gpt4ov1_ac"+str(st.session_state.linha))
             st.write(txt_verdade)
-            gpt4ov1_ve = st.feedback("faces", key="gpt4ov1_ve"+str(st.session_state.linha))
+            gpt4ov1_ve = st.feedback("stars", key="gpt4ov1_ve"+str(st.session_state.linha))
             st.write(txt_fluencia)
-            gpt4ov1_fl = st.feedback("faces", key="gpt4ov1_fl"+str(st.session_state.linha))
+            gpt4ov1_fl = st.feedback("stars", key="gpt4ov1_fl"+str(st.session_state.linha))
 
         st.divider()
 
+        st.write("##### Relatório de sentença 2")
         col1, col2 = st.columns([3, 1], vertical_alignment="center")
 
         with col1:
@@ -136,20 +120,20 @@ if uploaded_file is not None:
 
         with col2:
             st.write(txt_acuracia)
-            gpt4ominiv1_ac = st.feedback("faces", key="gpt4ominiv1_ac"+str(st.session_state.linha))
+            gpt4ominiv1_ac = st.feedback("stars", key="gpt4ominiv1_ac"+str(st.session_state.linha))
             st.write(txt_verdade)
-            gpt4ominiv1_ve = st.feedback("faces", key="gpt4ominiv1_ve"+str(st.session_state.linha))
+            gpt4ominiv1_ve = st.feedback("stars", key="gpt4ominiv1_ve"+str(st.session_state.linha))
             st.write(txt_fluencia)
-            gpt4ominiv1_fl = st.feedback("faces", key="gpt4ominiv1_fl"+str(st.session_state.linha))
+            gpt4ominiv1_fl = st.feedback("stars", key="gpt4ominiv1_fl"+str(st.session_state.linha))
 
         st.divider()
 
+        st.write("##### Relatório de sentença 3")
         col1, col2 = st.columns([3, 1], vertical_alignment="center")
 
         with col1:
             with st.container(height=300):
                 st.markdown(df["gpt-4o-v2"][st.session_state.linha])
-                # st.html('<span style="font-size: 12px;">'+df["gpt-4o-v2"][st.session_state.linha]+'</span>')
 
         with col2:
             st.write(txt_acuracia)
@@ -161,12 +145,12 @@ if uploaded_file is not None:
 
         st.divider()
 
+        st.write("##### Relatório de sentença 4")
         col1, col2 = st.columns([3, 1], vertical_alignment="center")
 
         with col1:
             with st.container(height=300):
                 st.markdown(df["gpt-4o-mini-v2"][st.session_state.linha])
-                # st.html('<span style="font-size: 12px;">'+df["gpt-4o-mini-v2"][st.session_state.linha]+'</span>')
 
         with col2:
             st.write(txt_acuracia)
@@ -179,11 +163,6 @@ if uploaded_file is not None:
         st.button('Próximo processo', on_click=mostrar_proxima_linha, key='botao_mostrar_proxima_linha')
 
     else:
-        # st.write(len(st.session_state.num_processo))
-        # st.write(len(st.session_state.gpt4ov1_a))
-        # st.write(len(st.session_state.gpt4ov1_v))
-        # st.write(len(st.session_state.gpt4ov1_f))
-
         respostas = {
             "num_processo": st.session_state.num_processo,
             "gpt4ov1_a": st.session_state.gpt4ov1_a,
@@ -207,13 +186,10 @@ if uploaded_file is not None:
         }
 
         arquivo_retorno = uploaded_file.name.split(".")[0]+"-retorno.xlsx"
-
         df_respostas = pd.DataFrame(respostas)
-        # df_respostas.to_excel("Respostas.xlsx", index=False)
         df_respostas.to_excel(arquivo_retorno, index=False)
 
         # Ler o arquivo Excel gerado
-        # with open("Respostas.xlsx", "rb") as file:
         with open(arquivo_retorno, "rb") as file:
             st.download_button(
                 label="Salvar respostas",
